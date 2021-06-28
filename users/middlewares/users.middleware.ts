@@ -20,6 +20,20 @@ class UsersMiddleWare {
     }
   }
 
+  async validateSameEmailDoesntExist(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    const user = await usersService.getUserByEmail(req.body.email);
+
+    if (user) {
+      res.status(400).send({ error: "User email already exists" });
+    } else {
+      next();
+    }
+  }
+
   async validateSameEmailBelongToSameUser(
     req: express.Request,
     res: express.Response,
