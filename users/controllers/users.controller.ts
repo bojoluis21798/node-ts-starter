@@ -24,7 +24,7 @@ class UserController {
 
     const userId = await usersService.create(req.body);
 
-    res.status(201).send({ id: userId });
+    res.status(201).send({ id: userId, message: "User added." });
   }
 
   async patch(req: express.Request, res: express.Response) {
@@ -32,18 +32,18 @@ class UserController {
       req.body.password = await argon2.hash(req.body.password);
     }
     log(await usersService.patchById(req.body.id, req.body));
-    res.status(204).send();
+    res.status(200).send({ id: req.body.id, message: "User patched." });
   }
 
   async put(req: express.Request, res: express.Response) {
     req.body.password = await argon2.hash(req.body.password);
     log(await usersService.putById(req.body.id, req.body));
-    res.status(204).send();
+    res.status(200).send({ id: req.body.id, message: "User updated." });
   }
 
   async removeUser(req: express.Request, res: express.Response) {
     log(await usersService.deleteById(req.body.id));
-    res.status(204).send();
+    res.status(200).send({ id: req.body.id, message: "User removed." });
   }
 }
 
