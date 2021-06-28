@@ -66,7 +66,7 @@ class UsersMiddleWare {
     res: express.Response,
     next: express.NextFunction
   ) {
-    const user = await usersService.readById(req.body.userId);
+    const user = await usersService.readById(req.params.userId);
     if (user) {
       next();
     } else {
