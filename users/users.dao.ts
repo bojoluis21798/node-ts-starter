@@ -2,66 +2,29 @@ import { CreateUserDto } from "./dto/create.user.dto";
 import { PutUserDto } from "./dto/put.user.dto";
 import { PatchUserDto } from "./dto/patch.user.dto";
 
+import mongooseService from "../common/services/mongoose.service";
+
 import shortid from "shortid";
 import debug from "debug";
 
 const log: debug.IDebugger = debug("app:in-memory-dao");
 
 class UsersDao {
-  users: Array<CreateUserDto> = [];
+  Schema = mongooseService.getMongoose().Schema;
 
-  async addUser(user: CreateUserDto) {
-    user.id = shortid();
-    this.users.push(user);
-    return user.id;
-  }
+  userSchema = new this.Schema(
+    {
+      _id: String,
+      email: String,
+      password: { type: String, select: false },
+      firstName: String,
+      lastName: String,
+      permissionFlags: Number,
+    },
+    { id: false }
+  );
 
-  async getUsers() {
-    return this.users;
-  }
-
-  async getUserById(userId: string) {
-    return this.users.find((user) => user.id === userId);
-  }
-
-  async putUserById(userId: string, user: PutUserDto) {
-    const userIndex = this.users.findIndex((user) => user.id === userId);
-    this.users.splice(userIndex, 1, user);
-    return `${user.id} updated via PUT`;
-  }
-
-  async patchUserById(userId: string, user: PatchUserDto) {
-    const userIndex = this.users.findIndex((user) => user.id === userId);
-    const currentUser = this.users[userIndex];
-
-    const allowedPatchFields = [
-      "firstname",
-      "lastname",
-      "password",
-      "permissionLevel",
-    ];
-
-    const updatedUser = Object.entries(user).reduce(
-      (obj, [key, value]) =>
-        allowedPatchFields.includes(key) ? { ...obj, [key]: value } : obj,
-      currentUser
-    );
-
-    this.users.splice(userIndex, 1, updatedUser);
-    return `${user.id} patched`;
-  }
-
-  async removeUserById(userId: string) {
-    const userIndex = this.users.findIndex((user) => user.id === userId);
-
-    this.users.splice(userIndex, 1);
-
-    return `${userId} removed`;
-  }
-
-  async getUserByEmail(email: string) {
-    return this.users.find((user) => user.email === email) || null;
-  }
+  User = mongooseService.getMongoose().model("Users", this.userSchema);
 
   constructor() {
     log("Create new instance of UsersDao");

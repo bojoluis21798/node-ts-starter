@@ -1,8 +1,7 @@
 export interface CreateUserDto {
-  id: string;
   email: string;
   password: string;
   firstname?: string;
   lastname?: string;
-  permissionLevel: number;
+  permissionFlags: number;
 }
