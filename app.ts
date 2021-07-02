@@ -5,6 +5,12 @@ import cors from "cors";
 import { CommonRoutesConfig } from "./common/config.routes.config";
 import { UserRoutes } from "./users/users.routes.config";
 import debug from "debug";
+import dotenv from "dotenv";
+
+const dotenvResult = dotenv.config();
+if (dotenvResult.error) {
+  throw dotenvResult.error;
+}
 
 const app: express.Application = express();
 const port = process.env.PORT || 3000;
