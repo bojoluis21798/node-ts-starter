@@ -4,6 +4,7 @@ import * as expressWinston from "express-winston";
 import cors from "cors";
 import { CommonRoutesConfig } from "./common/config.routes.config";
 import { UserRoutes } from "./users/users.routes.config";
+import { AuthRoutes } from "./auth/auth.routes.config";
 import debug from "debug";
 import dotenv from "dotenv";
 
@@ -36,6 +37,7 @@ if (!process.env.DEBUG) {
 app.use(expressWinston.logger(loggerOptions));
 
 routes.push(new UserRoutes(app));
+routes.push(new AuthRoutes(app));
 
 const runningMessage = `Server running at http://localhost:${port}`;
 app.get("/", (req: express.Request, res: express.Response) => {
