@@ -2,19 +2,16 @@ import { getModelForClass, prop } from '@typegoose/typegoose';
 
 class User {
   @prop()
-  public _id!: string;
-
-  @prop()
   public email!: string;
 
   @prop()
   public password!: string;
 
   @prop()
-  public firstname?: string | undefined;
+  public firstname?: string;
 
   @prop()
-  public lastname?: string | undefined;
+  public lastname?: string;
 
   @prop()
   public permissionFlags!: number;

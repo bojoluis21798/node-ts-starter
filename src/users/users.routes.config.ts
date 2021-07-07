@@ -14,7 +14,7 @@ export class UserRoutes extends CommonRoutesConfig {
     super(app, 'UserRoutes');
   }
 
-  configureRoutes() {
+  configureRoutes(): express.Application {
     this.app
       .route('/users')
       .get(
@@ -75,14 +75,15 @@ export class UserRoutes extends CommonRoutesConfig {
       usersController.patch
     ]);
 
-    this.app.put(`/users/:userId/permissionFlags/:permissionFlags`, [
+    this.app.put(
+      `/users/:userId/permissionFlags/:permissionFlags`,
       jwtMiddleware.validJWTNeeded,
       permissionMiddleware.onlySameUserOrAdminCanDoThisAction,
       permissionMiddleware.permissionFlagRequired(
         PermissionFlag.FREE_PERMISSION
       ),
       usersController.updatePermissionFlags
-    ]);
+    );
 
     return this.app;
   }

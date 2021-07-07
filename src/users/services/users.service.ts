@@ -6,7 +6,7 @@ import UserModel from '../models/users.model';
 import shortid from 'shortid';
 
 class UserService implements CRUD {
-  static async list(limit = 25, page = 0) {
+  async list(limit = 25, page = 0) {
     return UserModel.find()
       .limit(limit)
       .skip(limit * page)
