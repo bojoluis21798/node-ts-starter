@@ -7,7 +7,7 @@ import shortid from "shortid";
 
 class UserService implements CRUD {
   async list(limit: number = 25, page: number = 0) {
-    return UserModel.find()
+    return await UserModel.find()
       .limit(limit)
       .skip(limit * page)
       .exec();
