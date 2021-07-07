@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@typegoose/typegoose": "^7.6.1",
     "argon2": "^0.28.2",
     "cors": "^2.8.5",
     "debug": "^4.3.1",

@@ -2,59 +2,42 @@ import { CreateUserDto } from "./dto/create.user.dto";
 import { PutUserDto } from "./dto/put.user.dto";
 import { PatchUserDto } from "./dto/patch.user.dto";
 
-import mongooseService from "../common/services/mongoose.service";
-
 import shortid from "shortid";
 import debug from "debug";
-import IUser from "./interfaces/user.interface";
+import UserModel from "./models/users.model";
 
 const log: debug.IDebugger = debug("app:in-memory-dao");
 
 class UsersDao {
-  Schema = mongooseService.getMongoose().Schema;
-
-  userSchema = new this.Schema<IUser>(
-    {
-      _id: String,
-      email: String,
-      password: { type: String, select: false },
-      firstName: String,
-      lastName: String,
-      permissionFlags: Number,
-    },
-    { id: false }
-  );
-
-  User = mongooseService.getMongoose().model<IUser>("Users", this.userSchema);
-
   async addUser(userFields: CreateUserDto) {
     const userId = shortid.generate();
-    const user = new this.User({
+
+    await UserModel.create({
       _id: userId,
       ...userFields,
       permissionFlags: 1,
     });
-    await user.save();
+
     return userId;
   }
 
   async getUserByEmail(email: string) {
-    return this.User.findOne({ email: email }).exec();
+    return UserModel.findOne({ email: email }).exec();
   }
 
   async getUserById(userId: string) {
-    return this.User.findOne({ _id: userId }).populate("User").exec();
+    return UserModel.findOne({ _id: userId }).populate("User").exec();
   }
 
   async getUsers(limit = 25, page = 0) {
-    return this.User.find()
+    return UserModel.find()
       .limit(limit)
       .skip(limit * page)
       .exec();
   }
 
   async updateUserById(userId: string, userFields: PatchUserDto | PutUserDto) {
-    const existingUser = await this.User.findOneAndUpdate(
+    const existingUser = await UserModel.findOneAndUpdate(
       { _id: userId },
       { $set: userFields },
       { new: true }
@@ -64,13 +47,13 @@ class UsersDao {
   }
 
   async getUserByEmailWithPassword(email: string) {
-    return this.User.findOne({ email: email })
+    return UserModel.findOne({ email: email })
       .select("_id email permissionFlags +password")
       .exec();
   }
 
   async removeUserById(userId: string) {
-    return this.User.deleteOne({ _id: userId }).exec();
+    return UserModel.deleteOne({ _id: userId }).exec();
   }
 
   constructor() {
