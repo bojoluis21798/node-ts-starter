@@ -5,6 +5,9 @@ import usersMiddleware from "./middlewares/users.middleware";
 
 import bodyValidationMiddleware from "../common/middlewares/body.validation.middleware";
 import { body } from "express-validator";
+import jwtMiddleware from "../auth/middlewares/jwt.middleware";
+import permissionMiddleware from "../common/middlewares/common.permission.middleware";
+import { PermissionFlag } from "../common/middlewares/common.permissionflag.middleware";
 
 export class UserRoutes extends CommonRoutesConfig {
   constructor(app: express.Application) {
@@ -14,7 +17,13 @@ export class UserRoutes extends CommonRoutesConfig {
   configureRoutes() {
     this.app
       .route("/users")
-      .get(usersController.listUsers)
+      .get(
+        jwtMiddleware.validJWTNeeded,
+        permissionMiddleware.permissionFlagRequired(
+          PermissionFlag.ADMIN_PERMISSION
+        ),
+        usersController.listUsers
+      )
       .post(
         body("email").isEmail(),
         body("password")
@@ -29,7 +38,11 @@ export class UserRoutes extends CommonRoutesConfig {
 
     this.app
       .route("/users/:userId")
-      .all(usersMiddleware.validateUserExists)
+      .all(
+        usersMiddleware.validateUserExists,
+        jwtMiddleware.validJWTNeeded,
+        permissionMiddleware.onlySameUserOrAdminCanDoThisAction
+      )
       .get(usersController.getUserById)
       .delete(usersController.removeUser);
 
@@ -43,6 +56,7 @@ export class UserRoutes extends CommonRoutesConfig {
       body("permissionFlags").isInt(),
       bodyValidationMiddleware.verifyBodyFieldsErrors,
       usersMiddleware.validateSameEmailBelongToSameUser,
+      permissionMiddleware.onlySameUserOrAdminCanDoThisAction,
       usersController.put,
     ]);
 
@@ -57,6 +71,7 @@ export class UserRoutes extends CommonRoutesConfig {
       body("permissionFlags").isInt().optional(),
       bodyValidationMiddleware.verifyBodyFieldsErrors,
       usersMiddleware.validatePatchEmail,
+      permissionMiddleware.onlySameUserOrAdminCanDoThisAction,
       usersController.patch,
     ]);
 
