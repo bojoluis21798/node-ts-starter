@@ -8,6 +8,7 @@ import { AuthRoutes } from "./auth/auth.routes.config";
 import debug from "debug";
 import dotenv from "dotenv";
 import helmet from "helmet";
+import mongooseService from "./common/services/mongoose.service";
 
 const dotenvResult = dotenv.config();
 if (dotenvResult.error) {
@@ -40,6 +41,8 @@ if (!process.env.DEBUG) {
 }
 
 app.use(expressWinston.logger(loggerOptions));
+
+mongooseService.connectWithRetry();
 
 routes.push(new UserRoutes(app));
 routes.push(new AuthRoutes(app));

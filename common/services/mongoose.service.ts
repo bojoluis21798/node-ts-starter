@@ -16,10 +16,6 @@ class MongooseService {
     this.connectWithRetry();
   }
 
-  getMongoose() {
-    return mongoose;
-  }
-
   connectWithRetry = () => {
     log("Attempting MongoDB Connection (will retry if needed)");
     mongoose
