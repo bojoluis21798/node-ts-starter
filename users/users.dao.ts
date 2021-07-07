@@ -6,13 +6,14 @@ import mongooseService from "../common/services/mongoose.service";
 
 import shortid from "shortid";
 import debug from "debug";
+import IUser from "./interfaces/user.interface";
 
 const log: debug.IDebugger = debug("app:in-memory-dao");
 
 class UsersDao {
   Schema = mongooseService.getMongoose().Schema;
 
-  userSchema = new this.Schema(
+  userSchema = new this.Schema<IUser>(
     {
       _id: String,
       email: String,
@@ -24,7 +25,7 @@ class UsersDao {
     { id: false }
   );
 
-  User = mongooseService.getMongoose().model("Users", this.userSchema);
+  User = mongooseService.getMongoose().model<IUser>("Users", this.userSchema);
 
   async addUser(userFields: CreateUserDto) {
     const userId = shortid.generate();
